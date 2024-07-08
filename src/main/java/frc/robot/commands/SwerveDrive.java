@@ -4,23 +4,26 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.Constants.OIConstants;
+import frc.robot.subsystems.DriveSubsystem;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 /** An example command that uses an example subsystem. */
-public class ExampleCommand extends Command {
+public class SwerveDrive extends Command {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ExampleSubsystem m_subsystem;
-
+  private final DriveSubsystem driveSubsystem;
+  private final CommandXboxController xbox = new CommandXboxController(OIConstants.kDriverControllerPort);
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ExampleCommand(ExampleSubsystem subsystem) {
-    m_subsystem = subsystem;
+  public SwerveDrive(DriveSubsystem driveSubsystem) {
+    this.driveSubsystem = driveSubsystem;
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(subsystem);
+    addRequirements(driveSubsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -29,7 +32,12 @@ public class ExampleCommand extends Command {
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    driveSubsystem.drive(-MathUtil.applyDeadband(xbox.getLeftY(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(xbox.getLeftX(), OIConstants.kDriveDeadband),
+                -MathUtil.applyDeadband(xbox.getRightX(), OIConstants.kDriveDeadband),
+                true, true);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
